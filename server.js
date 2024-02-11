@@ -2,21 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
-const { Client } = require("pg");
 const todoRoutes = require("./routes/todoRoutes");
 const { errorHandler } = require("./middleware");
+const client = require("./db");
 
 const app = express();
 
-const { PG_USER, SERVER_PORT, PG_HOST, PG_DATABASE, PG_PASSWORD, PG_PORT } =
-  process.env;
-const client = new Client({
-  user: PG_USER,
-  host: PG_HOST,
-  database: PG_DATABASE,
-  password: PG_PASSWORD,
-  port: PG_PORT,
-});
+const { SERVER_PORT } = process.env;
 
 app.use(
   cors({
