@@ -12,6 +12,10 @@
         "quotes": "off",
         "no-console": "off",
         "comma-dangle": "off",
-        "object-curly-newline": "off"
+        "object-curly-newline": "off",
+        "operator-linebreak": "off",
+        "arrow-body-style": "off",
+        "no-unused-vars": "warn",
+        "consistent-return": "off"
     }
 }

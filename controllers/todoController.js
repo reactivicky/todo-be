@@ -1,4 +1,11 @@
-const getAllTodos = () => {};
+const tryCatch = require("../utils/tryCatch");
+
+const getAllTodos = tryCatch(async (req, res) => {
+  res.status(200).json({
+    status: "sucess",
+    data: "todos",
+  });
+});
 
 const createTodo = () => {};
 

@@ -4,18 +4,12 @@ const morgan = require("morgan");
 const cors = require("cors");
 const { Client } = require("pg");
 const todoRoutes = require("./routes/todoRoutes");
+const { errorHandler } = require("./middleware");
 
 const app = express();
 
-const {
-  NODE_ENV,
-  PG_USER,
-  SERVER_PORT,
-  PG_HOST,
-  PG_DATABASE,
-  PG_PASSWORD,
-  PG_PORT,
-} = process.env;
+const { PG_USER, SERVER_PORT, PG_HOST, PG_DATABASE, PG_PASSWORD, PG_PORT } =
+  process.env;
 const client = new Client({
   user: PG_USER,
   host: PG_HOST,
@@ -30,9 +24,7 @@ app.use(
   })
 );
 app.use(express.json());
-if (NODE_ENV === "development") {
-  app.use(morgan("dev"));
-}
+app.use(morgan("dev"));
 
 async function connectToDb() {
   try {
@@ -45,7 +37,9 @@ async function connectToDb() {
 
 const port = SERVER_PORT || 4000;
 
-app.use("/api/v1/todo", todoRoutes);
+app.use("/api/v1/todos", todoRoutes);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
