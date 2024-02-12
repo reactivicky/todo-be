@@ -103,8 +103,11 @@ const updateTodo = tryCatch(async (req, res) => {
   if (!success) {
     throw new CustomError("Id should be a number and is required", 403);
   }
-  const todoData = { title, description, iscomplete };
-  const { success: updateSuccess } = updateTodoSchema.safeParse(todoData);
+  const { success: updateSuccess } = updateTodoSchema.safeParse({
+    title,
+    description,
+    iscomplete,
+  });
   if (!updateSuccess) {
     throw new CustomError(
       "Title and description must be strings and iscomplete should be a boolean",
