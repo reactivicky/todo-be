@@ -117,6 +117,7 @@ const updateTodo = tryCatch(async (req, res) => {
       title = COALESCE($1, title),
       description = COALESCE($2, description),
       iscomplete = COALESCE($3, iscomplete)
+      updated_at = CURRENT_TIMESTAMP
     WHERE id = $4
     RETURNING *;
   `;
