@@ -33,7 +33,7 @@ const createTodo = tryCatch(async (req, res) => {
 
   // Use parameterized queries to prevent SQL injection
   const query = `
-  INSERT INTO todos (title, description, isComplete, created_at, updated_at)
+  INSERT INTO todos (title, description, iscomplete, created_at, updated_at)
   VALUES ($1, $2, $3, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
   RETURNING *;
 `;
@@ -90,6 +90,49 @@ const deleteTodo = tryCatch(async (req, res) => {
   res.sendStatus(204);
 });
 
-const updateTodo = () => {};
+const updateTodoSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional(),
+  iscomplete: z.boolean().optional(),
+});
+
+const updateTodo = tryCatch(async (req, res) => {
+  const { id } = req.params;
+  const { title, description, iscomplete } = req.body;
+  const { success } = todoIdSchema.safeParse(+id);
+  if (!success) {
+    throw new CustomError("Id should be a number and is required", 403);
+  }
+  const todoData = { title, description, iscomplete };
+  const { success: updateSuccess } = updateTodoSchema.safeParse(todoData);
+  if (!updateSuccess) {
+    throw new CustomError(
+      "Title and description must be strings and iscomplete should be a boolean",
+      403
+    );
+  }
+  const query = `
+    UPDATE todos
+    SET
+      title = COALESCE($1, title),
+      description = COALESCE($2, description),
+      iscomplete = COALESCE($3, iscomplete)
+    WHERE id = $4
+    RETURNING *;
+  `;
+  const values = [title, description, iscomplete, id];
+  const result = await client.query(query, values);
+
+  if (result.rows.length === 0) {
+    throw new CustomError("Todo with given id does not exist", 404);
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      todo: result.rows[0],
+    },
+  });
+});
 
 module.exports = { getAllTodos, createTodo, getTodo, deleteTodo, updateTodo };
